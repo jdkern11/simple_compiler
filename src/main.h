@@ -14,6 +14,10 @@ char GetName();
 char GetNum();
 void Emit(const std::string& s);
 void EmitLn(const std::string& s);
+void Expression();
+void Term();
+void Add();
+void Subtract();
 void Init();
 
 #endif  // SRC_MAIN_H_

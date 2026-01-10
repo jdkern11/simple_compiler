@@ -54,6 +54,43 @@ char GetNum() {
   return result;
 }
 
+void Expression() {
+  Term();
+  while (Look == '+' || Look == '-') {
+    EmitLn("push %rax");
+    switch (Look) {
+      case '+':
+        Add();
+        break;
+      case '-':
+        Subtract();
+        break;
+      default:
+        Expected("Addop");
+    }
+  }
+}
+
+void Term() {
+  std::string s(1, GetNum());
+  EmitLn("mov $" + s + ",%rax");
+}
+
+void Add() {
+  Match('+');
+  Term();
+  EmitLn("pop %rbx");
+  EmitLn("add %rbx,%rax");
+}
+
+void Subtract() {
+  Match('-');
+  Term();
+  EmitLn("pop %rbx");
+  EmitLn("sub %rbx,%rax");
+  EmitLn("neg %rax");
+}
+
 void Emit(const std::string& s) {
   std::cout << TAB << s;
 }
@@ -69,6 +106,7 @@ void Init() {
 
 int main() {
   Init();
+  Expression();
   return 0;
 }
 
