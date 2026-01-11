@@ -4,14 +4,14 @@ _start:
     mov $1,%rax
     push %rax
     mov $2,%rax
-    pop %rbx
-    add %rbx,%rax
     push %rax
     mov $3,%rax
     pop %rbx
-    add %rbx,%rax
+    imul %rbx,%rax
     push %rax
     mov $4,%rax
+    pop %rbx
+    idiv %rbx
     pop %rbx
     add %rbx,%rax
     push %rax

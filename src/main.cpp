@@ -54,9 +54,17 @@ char GetNum() {
   return result;
 }
 
+bool IsAddop(char x) {
+  return (x == '+' || x == '-');
+}
+
 void Expression() {
-  Term();
-  while (Look == '+' || Look == '-') {
+  if (IsAddop(Look)) {
+    EmitLn("mov $0,%rax");
+  } else {
+    Term();
+  }
+  while (IsAddop(Look)) {
     EmitLn("push %rax");
     switch (Look) {
       case '+':
@@ -71,9 +79,47 @@ void Expression() {
   }
 }
 
+void Factor() {
+  if (Look == '(') {
+    Match('(');
+    Expression();
+    Match(')');
+  } else {
+    std::string s(1, GetNum());
+    EmitLn("mov $" + s + ",%rax");
+  }
+}
+
+void Multiply() {
+  Match('*');
+  Factor();
+  EmitLn("pop %rbx");
+  EmitLn("imul %rbx,%rax");
+}
+
+void Divide() {
+  Match('/');
+  Factor();
+  EmitLn("mov %rax,%rbx");
+  EmitLn("pop %rax");
+  EmitLn("idiv %rbx");
+}
+
 void Term() {
-  std::string s(1, GetNum());
-  EmitLn("mov $" + s + ",%rax");
+  Factor();
+  while (Look == '*' || Look == '/') {
+    EmitLn("push %rax");
+    switch(Look) {
+      case '*':
+        Multiply();
+        break;
+      case '/':
+        Divide();
+        break;
+      default:
+        Expected("Mulop");
+    }
+  }
 }
 
 void Add() {
